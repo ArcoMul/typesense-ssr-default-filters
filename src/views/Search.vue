@@ -1,5 +1,6 @@
 <template>
   <ais-instant-search-ssr>
+    <ais-configure :facets="['release_decade']" />
     <ais-search-box />
     <ais-stats />
     Genres:
@@ -33,6 +34,7 @@ import {
   AisSearchBox,
   AisStats,
   AisPagination,
+  AisConfigure,
 } from 'vue-instantsearch';
 
 export default {
@@ -44,6 +46,7 @@ export default {
     AisSearchBox,
     AisStats,
     AisPagination,
+    AisConfigure,
   },
 };
 </script>

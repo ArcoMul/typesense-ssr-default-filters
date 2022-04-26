@@ -61,9 +61,6 @@ export async function createApp({
       createServerRootMixin({
         searchClient,
         indexName: 'songs_1630520530850',
-        searchParameters: {
-          facets: ['release_decade'],
-        },
         searchFunction(helper) {
           helper.addFacetRefinement('release_decade', '1960s').search();
         },
