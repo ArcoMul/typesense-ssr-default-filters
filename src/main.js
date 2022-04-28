@@ -2,32 +2,9 @@ import Vue from 'vue';
 import App from './App.vue';
 import { createRouter } from './router';
 import { createServerRootMixin } from 'vue-instantsearch';
-// import algoliasearch from 'algoliasearch/lite';
+import algoliasearch from 'algoliasearch/lite';
 import qs from 'qs';
 import _renderToString from 'vue-server-renderer/basic';
-
-import TypesenseInstantSearchAdapter from "typesense-instantsearch-adapter";
-
-const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
-  server: {
-    apiKey: "8hLCPSQTYcBuK29zY5q6Xhin7ONxHy99", // Be sure to use the search-only-api-key
-    nodes: [
-      {
-        host: "qtg5aekc2iosjh93p.a1.typesense.net",
-        port: "443",
-        protocol: "https"
-      }
-    ]
-  },
-  // The following parameters are directly passed to Typesense's search API endpoint.
-  //  So you can pass any parameters supported by the search endpoint below.
-  //  queryBy is required.
-  additionalSearchParameters: {
-    query_by: "title",
-    // filter_by: 'genres:Rock'
-  }
-});
-const searchClient = typesenseInstantsearchAdapter.searchClient;
 
 function renderToString(app) {
   return new Promise((resolve, reject) => {
@@ -38,10 +15,10 @@ function renderToString(app) {
   });
 }
 
-// const searchClient = algoliasearch(
-//   'latency',
-//   '6be0576ff61c053d5f9a3225e2a90f76'
-// );
+const searchClient = algoliasearch(
+  'latency',
+  '6be0576ff61c053d5f9a3225e2a90f76'
+);
 
 Vue.config.productionTip = false;
 
@@ -60,10 +37,7 @@ export async function createApp({
     mixins: [
       createServerRootMixin({
         searchClient,
-        indexName: 'songs_1630520530850',
-        searchFunction(helper) {
-          helper.addFacetRefinement('release_decade', '1960s').search();
-        },
+        indexName: 'instant_search',
         routing: {
           router: {
             read() {

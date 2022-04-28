@@ -1,23 +1,25 @@
 <template>
   <ais-instant-search-ssr>
-    <ais-configure :facets="['release_decade']" />
+    <ais-configure filters="free_shipping:true" />
     <ais-search-box />
     <ais-stats />
-    Genres:
-    <ais-refinement-list attribute="genres" />
+    <ais-toggle-refinement attribute="free_shipping" label="Free shipping" />
+    Brand:
+    <ais-refinement-list attribute="brand" />
     <ais-hits>
       <template v-slot:item="{ item }">
         <p>
           <ais-highlight
-            attribute="title"
+            attribute="name"
             :hit="item"
           />
         </p>
         <p>
           <ais-highlight
-            attribute="primary_artist_name"
+            attribute="brand"
             :hit="item"
-          />, {{ item.genres }}, {{ item.release_decade }}
+          /><br />
+          Free shipping: {{item.free_shipping}}
         </p>
       </template>
     </ais-hits>
@@ -35,6 +37,7 @@ import {
   AisStats,
   AisPagination,
   AisConfigure,
+  AisToggleRefinement
 } from 'vue-instantsearch';
 
 export default {
@@ -47,6 +50,7 @@ export default {
     AisStats,
     AisPagination,
     AisConfigure,
+    AisToggleRefinement
   },
 };
 </script>
