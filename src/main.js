@@ -5,12 +5,24 @@ import { createServerRootMixin } from 'vue-instantsearch';
 // import algoliasearch from 'algoliasearch/lite';
 import qs from 'qs';
 import _renderToString from 'vue-server-renderer/basic';
+import { createHmac } from 'crypto'
 
 import TypesenseInstantSearchAdapter from "typesense-instantsearch-adapter";
 
+function generateScopedSearchKey(searchKey, parameters) {
+  // Note: only a key generated with the `documents:search` action will be
+  // accepted by the server, when usined with the search endpoint.
+  const paramsJSON = JSON.stringify(parameters)
+  const digest = Buffer.from(createHmac('sha256', searchKey).update(paramsJSON).digest('base64'))
+  const keyPrefix = searchKey.substr(0, 4)
+  const rawScopedKey = `${digest}${keyPrefix}${paramsJSON}`
+  return Buffer.from(rawScopedKey).toString('base64')
+}
+
 const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
   server: {
-    apiKey: "8hLCPSQTYcBuK29zY5q6Xhin7ONxHy99", // Be sure to use the search-only-api-key
+    apiKey: generateScopedSearchKey("8hLCPSQTYcBuK29zY5q6Xhin7ONxHy99", { filter_by: 'release_decade:1960s' }), // Be sure to use the search-only-api-key
+    // apiKey: "8hLCPSQTYcBuK29zY5q6Xhin7ONxHy99",
     nodes: [
       {
         host: "qtg5aekc2iosjh93p.a1.typesense.net",
@@ -24,7 +36,6 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
   //  queryBy is required.
   additionalSearchParameters: {
     query_by: "title",
-    // filter_by: 'genres:Rock'
   }
 });
 const searchClient = typesenseInstantsearchAdapter.searchClient;
@@ -61,9 +72,6 @@ export async function createApp({
       createServerRootMixin({
         searchClient,
         indexName: 'songs_1630520530850',
-        searchFunction(helper) {
-          helper.addFacetRefinement('release_decade', '1960s').search();
-        },
         routing: {
           router: {
             read() {
